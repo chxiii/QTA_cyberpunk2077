@@ -41,7 +41,10 @@ lapply(c("tidyverse",
          "cld3", # for language detect
          "ggplot2",
          "MetBrewer", # for visualisation color
-         "stopwords" # for data tidy, to filter stopword
+         "stopwords", # for data tidy, to filter stopword
+         "wordcloud", # for wordcloud
+         "RColorBrewer",
+         "tidytext"
          ), pkgTest)
 
 options(scipen = 200)
@@ -114,13 +117,21 @@ review_tidy <- function(text) {
     text <- gsub("[[:punct:]]", "", text) # Delete character like !@
     text <- gsub("\\s+", " ", text)       # Delete extra space
     text <- trimws(text)                  # Delete extra lines
-    return(text)
+    words <- unlist(strsplit(text, "\\s+"))
+    cleaned <- words[!tolower(words) %in% stopwords("en")]
+    return(paste(cleaned, collapse = " "))
 }
 
 df_en <- df_en %>%
   mutate(Review = sapply(Review, review_tidy))
 ```
 
+
+```{R}
+words <- df_en %>%
+  select(Review) %>%
+  unnest_tokens(word, Review)
+```
 
 ```{r pressure, echo=FALSE}
 ggplot(lang_counts, aes(x = reorder(Language, n), y = n)) +
