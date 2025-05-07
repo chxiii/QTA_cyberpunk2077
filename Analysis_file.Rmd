@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 In this section, we are going to load necessary packages for our further research.
 ```{R}
 # remove objects
-rm(list = ls())
+# rm(list = ls())
 # detach all libraries
 detachAllPackages <- function() {
   basic.packages <- c("package:stats", "package:graphics", "package:grDevices", "package:utils", "package:datasets", "package:methods", "package:base")
@@ -39,7 +39,8 @@ pkgTest <- function(pkg) {
 
 lapply(c("tidyverse",
          "cld3", # for language detect
-         "ggplot2"
+         "ggplot2",
+         "MetBrewer" # for visualisation color
          ), pkgTest)
 
 options(scipen = 200)
@@ -73,13 +74,36 @@ list.files(unzip)
 
 ## 
 ```{R}
-df <- read_csv(file.path(unzip, "Cyberpunk_2077_Steam_Reviews.csv"))
+raw <- read_csv(file.path(unzip, "Cyberpunk_2077_Steam_Reviews.csv"))
 head(df)
 ```
 
+## Data Tidy
+
+In this section, we are going to do the data tidy.
 
 ```{R}
+# Remove row ReviewID and SteamID, this is private information
+df <- raw %>%
+  select(-ReviewID, -SteamID)
 
+# Detect language in Review
+df <- df %>%
+  mutate(Language = cld3::detect_language(Review))
+
+lang_counts <- df %>%
+  count(Language, sort = TRUE) %>%
+  slice_max(n, n = 10)
+
+ggplot(lang_counts, aes(x = reorder(Language, n), y = n)) +
+  geom_col(fill = met.brewer("Cassatt2")[7],
+           color = "black") +
+  labs(
+    title = "Language Distribution",
+    x = "Language",
+    y = "Frequency",
+  ) + 
+  theme_bw()
 ```
 
 ## Including Plots
