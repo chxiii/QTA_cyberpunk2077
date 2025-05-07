@@ -95,6 +95,11 @@ lang_counts <- df %>%
   count(Language, sort = TRUE) %>%
   slice_max(n, n = 10)
 
+```
+
+
+
+```{r pressure, echo=FALSE}
 ggplot(lang_counts, aes(x = reorder(Language, n), y = n)) +
   geom_col(fill = met.brewer("Cassatt2")[7],
            color = "black") +
@@ -104,14 +109,6 @@ ggplot(lang_counts, aes(x = reorder(Language, n), y = n)) +
     y = "Frequency",
   ) + 
   theme_bw()
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
