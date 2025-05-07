@@ -40,7 +40,8 @@ pkgTest <- function(pkg) {
 lapply(c("tidyverse",
          "cld3", # for language detect
          "ggplot2",
-         "MetBrewer" # for visualisation color
+         "MetBrewer", # for visualisation color
+         "purrr"
          ), pkgTest)
 
 options(scipen = 200)
@@ -97,6 +98,28 @@ lang_counts <- df %>%
 
 ```
 
+Only analysis for English comments:
+
+```{R}
+df_en <- df %>%
+  filter(Language == "en")
+```
+
+Create a function for data tidy
+
+```{R}
+
+review_tidy <- function(text) {
+    text <- tolower(text)                 # Change to lower writing style
+    text <- gsub("[[:punct:]]", "", text) # Delete character like !@
+    text <- gsub("\\s+", " ", text)       # Delete extra space
+    text <- trimws(text)                  # Delete extra lines
+    return(text)
+}
+
+df_en <- df_en %>%
+  mutate(Review = sapply(Review, review_tidy))
+```
 
 
 ```{r pressure, echo=FALSE}
