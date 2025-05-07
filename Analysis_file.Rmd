@@ -9,6 +9,43 @@ date: "2025-05-07"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+## Prepare necessary packages
+
+In this section, we are going to load necessary packages for our further research.
+```{R}
+# remove objects
+rm(list = ls())
+# detach all libraries
+detachAllPackages <- function() {
+  basic.packages <- c("package:stats", "package:graphics", "package:grDevices", "package:utils", "package:datasets", "package:methods", "package:base")
+  package.list <- search()[ifelse(unlist(gregexpr("package:", search())) == 1, TRUE, FALSE)]
+  package.list <- setdiff(package.list, basic.packages)
+  if (length(package.list) > 0) for (package in package.list) detach(package, character.only = TRUE)
+}
+detachAllPackages()
+
+# load libraries
+pkgTest <- function(pkg) {
+  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+  if (length(new.pkg)) 
+    install.packages(new.pkg, dependencies = TRUE)
+  sapply(pkg, require, character.only = TRUE)
+}
+
+# here is where you load any necessary packages
+# ex: stringr
+# lapply(c("stringr"), pkgTest)
+
+lapply(c("tidyverse",
+         "cld3", # for language detect
+         "ggplot2"
+         ), pkgTest)
+
+options(scipen = 200)
+```
+
+
 ## R Markdown
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
@@ -16,7 +53,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{R}
-# Create a temprorary path for data downloading
+# Create a temporary path for data downloading
 temp <- tempdir()
 data <- file.path(temp, "Cyberpunk-2077-steam-reviews-as-of-aug-8-2024.zip")
 unzip <- file.path(temp, "unzip")
@@ -29,19 +66,20 @@ kaggle <- paste0(
 )
 system(kaggle)
 
-# Data unzipping and check the file name
+# Data unzipping and checking the file name
 unzip(zipfile = data, exdir = unzip)
 list.files(unzip)
 ```
 
-## Import Necessary Library
+## 
 ```{R}
-library(tidyverse)
+df <- read_csv(file.path(unzip, "Cyberpunk_2077_Steam_Reviews.csv"))
+head(df)
 ```
 
 
 ```{R}
-df <- read_csv("")
+
 ```
 
 ## Including Plots
