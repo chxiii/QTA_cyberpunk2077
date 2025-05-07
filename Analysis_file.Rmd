@@ -41,7 +41,7 @@ lapply(c("tidyverse",
          "cld3", # for language detect
          "ggplot2",
          "MetBrewer", # for visualisation color
-         "purrr"
+         "stopwords" # for data tidy, to filter stopword
          ), pkgTest)
 
 options(scipen = 200)
