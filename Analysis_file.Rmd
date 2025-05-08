@@ -48,6 +48,8 @@ lapply(c("tidyverse",
          ), pkgTest)
 
 options(scipen = 200)
+
+set.seed(42)
 ```
 
 
@@ -131,6 +133,17 @@ df_en <- df_en %>%
 words <- df_en %>%
   select(Review) %>%
   unnest_tokens(word, Review)
+
+word_freq <- words %>% 
+  count(word, sort = TRUE)
+
+wordcloud(
+  words = word_freq$word,
+  freq = word_freq$n,
+  min.freq = 20,
+  max.words = 200,
+  random.order = FALSE
+)
 ```
 
 ```{r pressure, echo=FALSE}
