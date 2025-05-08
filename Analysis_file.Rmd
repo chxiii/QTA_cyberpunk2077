@@ -45,7 +45,7 @@ lapply(c("tidyverse",
          "ggwordcloud", # for wordcloud
          "RColorBrewer",
          "tidytext",
-         "dplyr", # for date converse
+         "dplyr", # for sampling
          "lubridate" # for date converse
          ), pkgTest)
 
@@ -142,6 +142,7 @@ The strategy of sampling in this case will be stratified sampling by month, the 
 (2) Compared with other sampling methods, such as simple random sampling, or non-random cluster sampling, encounter sampling, etc., stratified sampling is more conducive to controlling the number of reviews at each time point and conducting subsequent statistical analysis.
 
 ```{R}
+# Prepared data for proportional sampling. Extract Date Posted into the format as Year-Month for sampling.
 df_en <- df_en %>%
   mutate(
     date_posted = parse_date_time(`Date Posted`, 
@@ -153,11 +154,45 @@ df_en <- df_en %>%
   )
 ```
 
+Before we sampling, it is necessary to see the tendency of comments amount with time. So here is a visualization of time and comments ammount:
+
+```{r pressure, echo=FALSE}
+df_monthly <- df_en %>%
+  filter(!is.na(year_month)) %>%
+  group_by(year_month) %>%
+  summarise(count = n()) %>%
+  arrange(year_month)
+
+# 画图
+ggplot(df_monthly, aes(x = as.Date(paste0(year_month, "-01")), y = count)) +
+  geom_line(color = "#2C3E50", size = 1) +
+  geom_point(color = "#E74C3C", size = 2) +
+  labs(title = "Monthly Review Count",
+       x = "Month",
+       y = "Number of Reviews") +
+  scale_x_date(date_labels = "%Y-%m", date_breaks = "3 months") +
+  theme_bw(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+# Proportional sampling
+df_sam <- df_en %>%
+  group_by(year_month) %>%
+  mutate(group_n = n()) %>%
+  sample_frac(0.05) %>%
+  ungroup()
+
+dim(df_sam)
+```
+
+
+
 Create a function for data tidy
 
 ```{R}
 # Prepare the stopwords library
-stopwords <- c(stopwords("en"), "game", "games", "can")
+stopwords <- c(stopwords("en"), "game", "games", "can", "yes")
 
 # Function to text data tidy 
 review_tidy <- function(text) {
