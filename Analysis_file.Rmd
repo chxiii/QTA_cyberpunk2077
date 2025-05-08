@@ -42,7 +42,7 @@ lapply(c("tidyverse",
          "ggplot2",
          "MetBrewer", # for visualisation color
          "stopwords", # for data tidy, to filter stopword
-         "wordcloud", # for wordcloud
+         "ggwordcloud", # for wordcloud
          "RColorBrewer",
          "tidytext"
          ), pkgTest)
@@ -137,14 +137,20 @@ words <- df_en %>%
 
 word_freq <- words %>% 
   count(word, sort = TRUE)
+print(word_freq)
+```
 
-wordcloud(
-  words = word_freq$word,
-  freq = word_freq$n,
-  min.freq = 20,
-  max.words = 200,
-  random.order = FALSE
-)
+```{r wordcloud, fig.width = 7, fig.height = 7}
+
+ggplot(word_freq, aes(label = word, size = n)) +
+  geom_text_wordcloud_area(
+    rm_outside = TRUE,
+    color = "darkblue",
+    eccentricity = 1
+  ) +
+  scale_size_area(max_size = 15) +
+  theme_minimal() +
+  labs(title = "Word Cloud of Steam Reviews")
 ```
 
 ```{r pressure, echo=FALSE}
