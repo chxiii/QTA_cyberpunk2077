@@ -46,7 +46,8 @@ lapply(c("tidyverse",
          "RColorBrewer",
          "tidytext",
          "dplyr", # for sampling
-         "lubridate" # for date converse
+         "lubridate", # for date converse
+         "scales"
          ), pkgTest)
 
 options(scipen = 200)
@@ -240,7 +241,7 @@ df_en <- df_en %>%
 
 
 ```{R}
-words <- df_en %>%
+words <- df_sam %>%
   select(Review) %>%
   unnest_tokens(word, Review)
 
@@ -250,7 +251,13 @@ print(word_freq)
 ```
 
 ```{r wordcloud, fig.width = 7, fig.height = 7}
-
+ggplot(word_freq, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 20 Most Frequent Words in Reviews",
+       x = "Word",
+       y = "Frequency") +
+  theme_minimal(base_size = 13)
 ```
 
 
