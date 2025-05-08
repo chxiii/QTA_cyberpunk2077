@@ -96,7 +96,7 @@ In this section, we are going to do the data tidy.
 
 The first step is to clean several redunctant variables like ReviewID and SteamID due to privacy policy.
 
-And also we notice in the previous section that there are several kinds of language in the data frame. So we are going to see the distribution of different language and then I only extract English comments as the main data source of this analysis for convinience.
+And also we notice in the previous section that there are several kinds of language in the data frame. So we are going to see the distribution of different language and then I only extract English comments as the main data source of this analysis for convenience.
 
 ```{R}
 # Remove row ReviewID and SteamID, this is private information
@@ -113,6 +113,8 @@ lang_counts <- df %>%
   slice_max(n, n = 10)
 ```
 
+English and Chinese are two most popular languages used in all comment players. Going further, we can speculate that the largest communities for Cyberpunk 2077 are English and Chinese communities.
+
 ```{R}
 # Visulize the distribution of language
 ggplot(lang_counts, aes(x = reorder(Language, n), y = n)) +
@@ -128,7 +130,7 @@ ggplot(lang_counts, aes(x = reorder(Language, n), y = n)) +
         panel.grid.minor = element_blank())
 ```
 
-Only analysis for English comments:
+In this case, we only analysis for English comments, but probably one day I might do the Chinese part as well :)
 
 ```{R}
 df_en <- df %>%
@@ -159,9 +161,9 @@ df_en <- df_en %>%
 
 Before we sampling, it is necessary to see the tendency of comments amount with time. So here is a visualization of time and comments ammount:
 
-We can find except 12/2020, which is the publication date of the cyberpunk 2077, there are also several peak review moment including 11/2021, 09/2022, 09/2023, which correspond to major update patch 1.3, 1.6, and 2.0 respectively.
+We can find except 12/2020, which is the publication date of the cyberpunk 2077, there are also several peak review moment including 11/2021, 09/2022, 09/2023, which correspond to major update patch 1.3, 1.6, and 2.0 respectively. The detailed patch timeline can be found in this website: <https://store.steampowered.com/news/app/1091500>
 
-
+From the plot below we can analysis that every patch brought an increase in discussion, even before the patch relase, there were already discussion increase happened in community.
 
 ```{r pressure, echo=FALSE}
 # Prepare data set for the plot, due to it is group by month
