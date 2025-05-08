@@ -44,7 +44,9 @@ lapply(c("tidyverse",
          "stopwords", # for data tidy, to filter stopword
          "ggwordcloud", # for wordcloud
          "RColorBrewer",
-         "tidytext"
+         "tidytext",
+         "dplyr", # for date converse
+         "lubridate" # for date converse
          ), pkgTest)
 
 options(scipen = 200)
@@ -135,7 +137,21 @@ There are still 257662 observations in English comments, which will lead a very 
 
 The strategy of sampling in this case will be stratified sampling by month, the reasons are:
 
-  (1) 
+(1) Based on empirical observations and the theories of game critics, there is a trend of reviews of the game Cyberpunk 2077 differentiating over time, from mixed reviews at the beginning of the game to positive reviews today, so time is an important dimension for understanding the shift in reviews.
+
+(2) Compared with other sampling methods, such as simple random sampling, or non-random cluster sampling, encounter sampling, etc., stratified sampling is more conducive to controlling the number of reviews at each time point and conducting subsequent statistical analysis.
+
+```{R}
+df_en <- df_en %>%
+  mutate(
+    date_posted = parse_date_time(`Date Posted`, 
+                                  # "mdy" -> for 08-24-24
+                                  # "d-b-y" -> for 18-Aug-24
+                                  # "d-B-y" -> for 18-August-24
+                                  orders = c("mdy", "d-b-y", "d-B-y")),
+    year_month = format(date_posted, "%Y-%m")
+  )
+```
 
 Create a function for data tidy
 
