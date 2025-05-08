@@ -201,6 +201,8 @@ ggplot(df_monthly, aes(x = date, y = count)) +
         panel.grid.minor = element_blank())
 ```
 
+Next, we are going to sample the population to make the data set more clear.
+
 ```{R}
 # Proportional sampling
 df_sam <- df_en %>%
