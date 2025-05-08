@@ -97,10 +97,10 @@ df <- raw %>%
 df <- df %>%
   mutate(Language = cld3::detect_language(Review))
 
+# Count the frequency of language
 lang_counts <- df %>%
   count(Language, sort = TRUE) %>%
   slice_max(n, n = 10)
-
 ```
 
 Only analysis for English comments:
@@ -114,13 +114,14 @@ Create a function for data tidy
 
 ```{R}
 
+# Function to text data tidy 
 review_tidy <- function(text) {
     text <- tolower(text)                 # Change to lower writing style
     text <- gsub("[[:punct:]]", "", text) # Delete character like !@
     text <- gsub("\\s+", " ", text)       # Delete extra space
     text <- trimws(text)                  # Delete extra lines
     words <- unlist(strsplit(text, "\\s+"))
-    cleaned <- words[!tolower(words) %in% stopwords("en")]
+    cleaned <- words[!tolower(words) %in% c(stopwords("en"), "game", "games")]
     return(paste(cleaned, collapse = " "))
 }
 
