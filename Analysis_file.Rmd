@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 In this section, we are going to load necessary packages for our further research.
 ```{R}
 # remove objects
-# rm(list = ls())
+rm(list = ls())
 # detach all libraries
 detachAllPackages <- function() {
   basic.packages <- c("package:stats", "package:graphics", "package:grDevices", "package:utils", "package:datasets", "package:methods", "package:base")
@@ -66,6 +66,11 @@ data <- file.path(temp, "Cyberpunk-2077-steam-reviews-as-of-aug-8-2024.zip")
 unzip <- file.path(temp, "unzip")
 dir.create(data, showWarnings = FALSE)
 
+# Judge if there is already exist path. If yes, delete the old one.
+if (dir.exists(data)) {
+  unlink(data, recursive = TRUE)
+}
+
 # Data downloading
 kaggle <- paste0(
   "kaggle datasets download -d filas1212/cyberpunk-2077-steam-reviews-as-of-aug-8-2024 ",
@@ -78,7 +83,6 @@ unzip(zipfile = data, exdir = unzip)
 list.files(unzip)
 ```
 
-## 
 ```{R}
 raw <- read_csv(file.path(unzip, "Cyberpunk_2077_Steam_Reviews.csv"))
 head(df)
@@ -87,6 +91,10 @@ head(df)
 ## Data Tidy
 
 In this section, we are going to do the data tidy.
+
+The first step is to clean several redunctant variables like ReviewID and SteamID due to privacy policy.
+
+And also we notice in the previous section that there are several kinds of language in the data frame. So we are going to see the distribution of different language and then I only extract English comments as the main data source of this analysis for convinience.
 
 ```{R}
 # Remove row ReviewID and SteamID, this is private information
@@ -102,17 +110,38 @@ lang_counts <- df %>%
   count(Language, sort = TRUE) %>%
   slice_max(n, n = 10)
 ```
+```{r pressure, echo=FALSE}
+# Visulize the distribution of language
+ggplot(lang_counts, aes(x = reorder(Language, n), y = n)) +
+  geom_col(fill = met.brewer("Cassatt2")[7],
+           color = "black") +
+  labs(
+    title = "Language Distribution",
+    x = "Language",
+    y = "Frequency",
+  ) + 
+  theme_bw()
+```
 
 Only analysis for English comments:
 
 ```{R}
 df_en <- df %>%
   filter(Language == "en")
+dim(df_en)
 ```
+
+There are still 257662 observations in English comments, which will lead a very slow reaction during analysis, at least on my computer :(, so I decided to sample the data set to make it accessibility.
+
+The strategy of sampling in this case will be stratified sampling by month, the reasons are:
+
+  (1) 
 
 Create a function for data tidy
 
 ```{R}
+# Prepare the stopwords library
+stopwords <- c(stopwords("en"), "game", "games", "can")
 
 # Function to text data tidy 
 review_tidy <- function(text) {
@@ -120,8 +149,9 @@ review_tidy <- function(text) {
     text <- gsub("[[:punct:]]", "", text) # Delete character like !@
     text <- gsub("\\s+", " ", text)       # Delete extra space
     text <- trimws(text)                  # Delete extra lines
+    text <- gsub("[0-9]+", "", text)      # Drop numbers
     words <- unlist(strsplit(text, "\\s+"))
-    cleaned <- words[!tolower(words) %in% c(stopwords("en"), "game", "games")]
+    cleaned <- words[!tolower(words) %in% stopwords]
     return(paste(cleaned, collapse = " "))
 }
 
@@ -142,27 +172,8 @@ print(word_freq)
 
 ```{r wordcloud, fig.width = 7, fig.height = 7}
 
-ggplot(word_freq, aes(label = word, size = n)) +
-  geom_text_wordcloud_area(
-    rm_outside = TRUE,
-    color = "darkblue",
-    eccentricity = 1
-  ) +
-  scale_size_area(max_size = 15) +
-  theme_minimal() +
-  labs(title = "Word Cloud of Steam Reviews")
 ```
 
-```{r pressure, echo=FALSE}
-ggplot(lang_counts, aes(x = reorder(Language, n), y = n)) +
-  geom_col(fill = met.brewer("Cassatt2")[7],
-           color = "black") +
-  labs(
-    title = "Language Distribution",
-    x = "Language",
-    y = "Frequency",
-  ) + 
-  theme_bw()
-```
+
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
