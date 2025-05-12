@@ -210,20 +210,13 @@ monthly_rating <- df_en %>%
          proportion = count / total) %>%
   filter(Rating == "Recommended")
 
-# time data for recommended rate visualisation
-key_time <- data.frame(
-  x = as.Date(c("2020-12-01", "2021-11-01", "2022-09-01", "2023-09-01")),
-  y = rep(max(df_en$monthly_rating) * 0.95, 4), 
-  label = c("Patch 1.0", "Patch 1.3", "Patch 1.6", "Patch 2.0")
-)
-
 ggplot(monthly_rating, aes(x = as.Date(paste0(year_month, "-01")), y = proportion)) +
   geom_line(color = met.brewer("Monet")[2], size = 1) +
   geom_point(color = met.brewer("Monet")[1], size = 1.5, shape = 0) +
   geom_vline(data = key_time, aes(xintercept = x), 
              linetype = "dashed", color = met.brewer("Monet")[1], alpha = 0.6) +
-
   scale_x_date(date_labels = "%Y-%m", date_breaks = "3 months") +
+  geom_smooth(color = met.brewer("Monet")[7], fill = met.brewer("Monet")[9]) + 
   labs(title = "Proportion of Recommended Reviews Over Time",
        x = "Month",
        y = "Recommended Rate") +
