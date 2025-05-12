@@ -247,12 +247,15 @@ word_freq <- df_sam %>%
   count(word, sort = TRUE)
 head(word_freq)
 
-top_words <- word_freq %>%
+top_words_bar <- word_freq %>%
   slice_max(n, n = 10)
+
+top_words_cloud <- word_freq %>%
+  slice_max(n, n = 100)
 ```
 
 ```{R}
-ggplot(top_words, aes(x = reorder(word, n), y = n)) +
+ggplot(top_words_bar, aes(x = reorder(word, n), y = n)) +
   geom_col(fill = met.brewer("Monet")[1], color = "black") +
   coord_flip() +
   labs(title = "Top 10 Most Frequent Words in English Reviews",
