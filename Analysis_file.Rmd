@@ -47,7 +47,9 @@ lapply(c("tidyverse",
          "tidytext",
          "dplyr", # for sampling
          "lubridate", # for date converse
-         "scales"
+         "scales",
+         "quanteda", # for keyness
+         "quanteda.textstats" # for keyness
          ), pkgTest)
 
 options(scipen = 200)
@@ -260,11 +262,6 @@ df_sam <- df_sam %>%
   mutate(Review = sapply(Review, review_tidy))
 ```
 
-Next, before we describe the word frequencies, we can see the rating change by time.
-
-```{R}
-
-```
 
 ```{R}
 word_freq <- df_sam %>%
@@ -289,6 +286,46 @@ ggplot(top_words_bar, aes(x = reorder(word, n), y = n)) +
        x = "Word",
        y = "Frequency") +
   theme_bw()
+```
+
+## Keyness Analysis
+
+Using log-likelihood ratio (LLR), keyness method is a nice way to check the differences of word in two groups.
+
+```{R}
+# Build a corpus
+corp <- corpus(df_sam, text_field = "Review")
+docvars(corp, "Rating") <- df_sam$Rating
+
+# Tokenization
+toks <- tokens(corp, remove_punct = TRUE, remove_numbers = TRUE)
+toks <- tokens_tolower(toks)
+toks <- tokens_remove(toks, stopwords("en"))
+
+# Build dfm and grouped by rating
+dfm_grouped <- dfm(toks) %>%
+  dfm_group(groups = docvars(corp, "Rating"))
+
+# Keyness
+keyness_result <- textstat_keyness(dfm_grouped, target = "Recommended")
+
+top_key <- keyness_result %>%
+  slice_max(abs(chi2), n = 15) %>%
+  mutate(word = reorder(feature, chi2))
+
+ggplot(top_key, aes(x = word, y = chi2, fill = chi2 > 0)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(title = "Keyness Analysis of Words by Rating",
+       subtitle = "Positive values → more associated with 'Recommended'",
+       x = "Word",
+       y = "Chi2") +
+  scale_fill_manual(values = c("TRUE" = met.brewer("Cassatt1")[8], 
+                               "FALSE" = met.brewer("Cassatt1")[1])) +
+  theme_bw() + 
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
 ```
 
 ```{R}
