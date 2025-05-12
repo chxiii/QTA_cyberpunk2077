@@ -216,7 +216,7 @@ ggplot(monthly_rating, aes(x = as.Date(paste0(year_month, "-01")), y = proportio
   geom_vline(data = key_time, aes(xintercept = x), 
              linetype = "dashed", color = met.brewer("Monet")[1], alpha = 0.6) +
   scale_x_date(date_labels = "%Y-%m", date_breaks = "3 months") +
-  geom_smooth(color = met.brewer("Monet")[7], fill = met.brewer("Monet")[9]) + 
+  geom_smooth(color = met.brewer("Monet")[8], fill = met.brewer("Monet")[9], alpha = 0.2) + 
   labs(title = "Proportion of Recommended Reviews Over Time",
        x = "Month",
        y = "Recommended Rate") +
