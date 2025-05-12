@@ -209,12 +209,11 @@ Next, we are going to sample the population to make the data set more clear.
 df_sam <- df_en %>%
   group_by(year_month) %>%
   mutate(group_n = n()) %>%
-  sample_frac(0.05) %>%
+  sample_frac(0.05) %>% # sample rate, for every group keep 5%
   ungroup()
 
 dim(df_sam)
 ```
-
 
 
 Create a function for data tidy
@@ -241,13 +240,11 @@ df_en <- df_en %>%
 
 
 ```{R}
-words <- df_sam %>%
+word_freq<- df_sam %>%
   select(Review) %>%
-  unnest_tokens(word, Review)
-
-word_freq <- words %>% 
+  unnest_tokens(word, Review) %>%
   count(word, sort = TRUE)
-print(word_freq)
+
 ```
 
 ```{r wordcloud, fig.width = 7, fig.height = 7}
