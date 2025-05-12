@@ -234,29 +234,31 @@ review_tidy <- function(text) {
     return(paste(cleaned, collapse = " "))
 }
 
-df_en <- df_en %>%
+df_sam <- df_sam %>%
   mutate(Review = sapply(Review, review_tidy))
 ```
 
 
 ```{R}
-word_freq<- df_sam %>%
+word_freq <- df_sam %>%
   select(Review) %>%
   unnest_tokens(word, Review) %>%
+  filter(!word %in% stopwords) %>%
   count(word, sort = TRUE)
+head(word_freq)
 
+top_words <- word_freq %>%
+  slice_max(n, n = 10)
 ```
 
-```{r wordcloud, fig.width = 7, fig.height = 7}
-ggplot(word_freq, aes(x = reorder(word, n), y = n)) +
-  geom_col(fill = "steelblue") +
+```{R}
+ggplot(top_words, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = met.brewer("Monet")[1], color = "black") +
   coord_flip() +
-  labs(title = "Top 20 Most Frequent Words in Reviews",
+  labs(title = "Top 10 Most Frequent Words in English Reviews",
        x = "Word",
        y = "Frequency") +
-  theme_minimal(base_size = 13)
+  theme_bw()
 ```
 
 
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
