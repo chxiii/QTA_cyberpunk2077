@@ -328,6 +328,8 @@ ggplot(top_key, aes(x = word, y = chi2, fill = chi2 > 0)) +
 
 ```
 
+## Word Cloud
+
 ```{R}
 ggplot(top_words_cloud, aes(label = word, size = n, color = n)) +
   geom_text_wordcloud(area_corr = TRUE, shape = "square") +
@@ -338,5 +340,5 @@ ggplot(top_words_cloud, aes(label = word, size = n, color = n)) +
   labs(title = "Word Cloud of English Reviews")
 ```
 
-
+## Readability
 
