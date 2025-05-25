@@ -334,7 +334,9 @@ ggplot(top_key, aes(x = word, y = chi2, fill = chi2 > 0)) +
 
 ## TTR - Readability
 
-There 
+So we used the TTR to analysis lexical diversity of player reviews. 
+
+The results show that the Recommended reviews have a lower TTR (~0.074), while Not Recommended reviews have a higher TTR (~0.115). This suggests that recommended reviews tend to use simpler and more repetitive language, possibly reflecting common, formula praise. In contrast, not recommended reviews display greater lexical variety, which may indicate more detailed, emotionally charged, or nuanced expressions of dissatisfaction.
 
 ```{R}
 
