@@ -341,7 +341,7 @@ There
 ttr <- textstat_lexdiv(dfm_grouped, measure = "TTR")
 
 ggplot(ttr, aes(x = document, y = TTR)) + 
-  geom_bar(stat = "identity", width=0.5, 
+  geom_bar(stat = "identity", width=0.35, 
            color = "black", fill = met.brewer("Monet")[1]) +
   theme_bw() +
   coord_flip()
