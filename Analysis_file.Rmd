@@ -40,6 +40,7 @@ pkgTest <- function(pkg) {
 lapply(c("tidyverse",
          "cld3", # for language detect
          "ggplot2",
+         "reshape2",
          "MetBrewer", # for visualisation color
          "stopwords", # for data tidy, to filter stopword
          "ggwordcloud", # for wordcloud
@@ -49,7 +50,8 @@ lapply(c("tidyverse",
          "lubridate", # for date converse
          "scales",
          "quanteda", # for keyness
-         "quanteda.textstats" # for keyness
+         "quanteda.textstats", # for keyness
+         "lsa" # for text similarity
          ), pkgTest)
 
 options(scipen = 200)
@@ -364,7 +366,62 @@ ggplot(ttr, aes(x = document, y = TTR)) +
 
 ## Text similarity 
 
+```{R}
+# filter the time range
+early_ver <- df_sam %>%
+  filter(year_month >= "2020-12", year_month <= "2021-12")
 
+latest_ver <- df_sam %>%
+  filter(year_month >= "2023-09", year_month <= "2024-09")
+
+# filter the rating
+early_positive <- early_ver %>% filter(Rating == "Recommended")
+early_negative <- early_ver %>% filter(Rating == "Not Recommended")
+latest_positive <- latest_ver %>% filter(Rating == "Recommended")
+latest_negative <- latest_ver %>% filter(Rating == "Not Recommended")
+
+# Integrate to a list
+group_texts <- c(
+  early_positive = paste(early_positive$Review, collapse = " "),
+  early_negative = paste(early_negative$Review, collapse = " "),
+  latest_positive = paste(latest_positive$Review, collapse = " "),
+  latest_negative = paste(latest_negative$Review, collapse = " ")
+)
+
+sim_crop <- corpus(group_texts)
+
+group_dfm <- dfm(tokens(sim_crop, remove_punct = TRUE, remove_numbers = TRUE)) %>%
+  dfm_tolower() %>%
+  dfm_remove(stopwords("en")) %>%
+  dfm_trim(min_termfreq = 5)
+
+similarity_matrix <- textstat_simil(group_dfm, margin = "documents", method = "cosine")
+
+sim_mat <- as.matrix(similarity_matrix)
+
+sim_df <- as.data.frame(sim_mat) %>%
+  rownames_to_column("doc1") %>%
+  pivot_longer(-doc1, names_to = "doc2", values_to = "similarity")
+
+# Due to the similarity is very close, so we use a categorical color platte
+sim_df <- sim_df %>%
+  mutate(sim_level = cut(similarity,
+                         breaks = c(0.80, 0.85, 0.90, 0.95, 1.00),
+                         labels = c("Low", "Medium", "High", "Very High")))
+
+ggplot(sim_df, aes(x = doc1, y = doc2, fill = sim_level)) +
+  geom_tile(color = "white") +
+  scale_fill_manual(values = c("Low" = met.brewer("VanGogh3")[1],
+                               "Medium" = met.brewer("VanGogh3")[3], 
+                               "High" = met.brewer("VanGogh3")[4], 
+                               "Very High" = met.brewer("VanGogh3")[6]),
+                    name = "Similarity Level") +
+  geom_text(aes(label = round(similarity, 3)), color = "black", size = 3) +
+  labs(title = "Cosine Similarity Heatmap (Binned Levels)",
+       x = " ", y = " ") +
+  theme_bw(base_size = 13) +
+  theme(axis.text.x = element_text())
+```
 
 
 
