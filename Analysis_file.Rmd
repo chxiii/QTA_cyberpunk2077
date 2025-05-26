@@ -7,9 +7,9 @@ date: "2025-05-07"
 
 ## Conclusion
 
-1. The language used in comments and the performance of emotions.
+1. For the language used in comments and the performance of emotions, positive comments are more concise and emotional, but negative comments being more specific and complex.
 
-I found 
+I found player's comments focus on game experience, story, bugs and update, also in Keyness analysis, positive comments are tend to "love", "great", "fun" while negative comments tend to "bug", "crash", "borning". Also 
 
 What's the most used language in Cyberpunk 2077's steam review? English and Chinese.
 
