@@ -363,7 +363,7 @@ ggplot(top_words_cloud, aes(label = word, size = n, color = n)) +
   labs(title = "Word Cloud of English Reviews")
 ```
 
-## Readability
+## Text similarity 
 
 
 
