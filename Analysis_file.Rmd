@@ -288,6 +288,18 @@ ggplot(top_words_bar, aes(x = reorder(word, n), y = n)) +
   theme_bw()
 ```
 
+## Word Cloud
+
+```{R}
+ggplot(top_words_cloud, aes(label = word, size = n, color = n)) +
+  geom_text_wordcloud(area_corr = TRUE, shape = "square") +
+  scale_size_area(max_size = 14) +
+  scale_color_gradient(low = met.brewer("VanGogh3")[3], 
+                       high = met.brewer("VanGogh3")[7]) +
+  theme_bw() +
+  labs(title = "Word Cloud of English Reviews")
+```
+
 ## Corpus and Tokens
 
 Using log-likelihood ratio (LLR), keyness method is a nice way to check the differences of word in two groups.
@@ -350,6 +362,7 @@ ggplot(ttr, aes(x = document, y = TTR)) +
 
 ```
 
+## Text similarity 
 
 ## Word Cloud
 
@@ -363,7 +376,7 @@ ggplot(top_words_cloud, aes(label = word, size = n, color = n)) +
   labs(title = "Word Cloud of English Reviews")
 ```
 
-## Text similarity 
+
 
 
 
