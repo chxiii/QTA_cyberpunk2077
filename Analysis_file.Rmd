@@ -9,7 +9,6 @@ date: "2025-05-07"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
 ## Prepare necessary packages
 
 In this section, we are going to load necessary packages for our further research.
