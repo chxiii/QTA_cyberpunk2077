@@ -366,6 +366,25 @@ ggplot(ttr, aes(x = document, y = TTR)) +
 
 ## Text similarity 
 
+In this section, we used a cosine similarity matrix to matures how similar two text documents are, which is based on the angle between word frequency vectors and range from:
+
++ 1: perfectly similar 
++ 0: no similarity
++ -1: completely opposite
+
+For the results of negative and positive comments in different period of cyberpunk 2077, there are the key insights of this data:
+
+1. More Variation in Negative Reviews:
+
+early positive vs. latest positive = 0.909
+early negative vs. latest negative = 0.883
+
+With time goes by, seems like there is a direction change in negative view, while for the positive comments are quite similar.
+
+2. Negative and positive comments are still quite similar:
+
+Even across sentiment lines (early positive vs. early negative = 0.904), similarity is high. This may suggest players often mention similar topics regardless ofrating, but frame them differently.
+
 ```{R}
 # filter the time range
 early_ver <- df_sam %>%
