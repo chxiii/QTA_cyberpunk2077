@@ -5,9 +5,21 @@ output: pdf_document
 date: "2025-05-07"
 ---
 
-
-
 ## Conclusion
+
+1. The language used in comments and the performance of emotions.
+
+I found 
+
+What's the most used language in Cyberpunk 2077's steam review? English and Chinese.
+
+What's the distribution of comments amount and ratings with the change of version?
+
+What's the most used word in players' comments?
+
+What's the attention differences between positive and negative comments?
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
