@@ -410,17 +410,20 @@ sim_df <- sim_df %>%
                          labels = c("Low", "Medium", "High", "Very High")))
 
 ggplot(sim_df, aes(x = doc1, y = doc2, fill = sim_level)) +
-  geom_tile(color = "white") +
+  geom_tile(color = "black") +
   scale_fill_manual(values = c("Low" = met.brewer("VanGogh3")[1],
                                "Medium" = met.brewer("VanGogh3")[3], 
                                "High" = met.brewer("VanGogh3")[4], 
                                "Very High" = met.brewer("VanGogh3")[6]),
                     name = "Similarity Level") +
   geom_text(aes(label = round(similarity, 3)), color = "black", size = 3) +
-  labs(title = "Cosine Similarity Heatmap (Binned Levels)",
+  labs(title = "Cos Similarity Heatmap", 
        x = " ", y = " ") +
   theme_bw(base_size = 13) +
-  theme(axis.text.x = element_text())
+  theme(axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 8))
 ```
 
 
