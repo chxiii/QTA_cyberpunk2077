@@ -50,7 +50,8 @@ lapply(c("tidyverse",
          "scales",
          "quanteda", # for keyness
          "quanteda.textstats", # for keyness
-         "lsa" # for text similarity
+         "lsa", # for text similarity
+         "stm" # for STM analysis
          ), pkgTest)
 
 options(scipen = 200)
@@ -446,6 +447,33 @@ ggplot(sim_df, aes(x = doc1, y = doc2, fill = sim_level)) +
 
 ## STM Analysis
 
+```{R}
 
+# File pre-processed
+processed <- textProcessor(documents = df_sam$Review,
+                           metadata = df_sam,
+                           lowercase = TRUE,
+                           removestopwords = TRUE,
+                           removenumbers = TRUE,
+                           removepunctuation = TRUE,
+                           stem = FALSE)
 
+# Create a file matrix
+out <- prepDocuments(processed$documents, processed$vocab, processed$meta)
 
+docs <- out$documents
+vocab <- out$vocab
+meta <- out$meta
+
+meta$year_month <- as.Date(paste0(meta$year_month, "-01"))
+meta$month_num <- as.numeric(meta$year_month)
+
+stm_model <- stm(documents = docs,
+                 vocab = vocab,
+                 K = 5,
+                 prevalence = ~ Rating + s(month_num),
+                 data = meta,
+                 max.em.its = 10,
+                 init.type = "Spectral")
+
+```
