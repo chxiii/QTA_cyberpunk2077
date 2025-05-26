@@ -5,6 +5,10 @@ output: pdf_document
 date: "2025-05-07"
 ---
 
+
+
+## Conclusion
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -60,11 +64,7 @@ set.seed(42)
 ```
 
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{R}
 # Create a temporary path for data downloading
@@ -164,6 +164,8 @@ df_en <- df_en %>%
   )
 ```
 
+## Basic Statistics Description
+
 Before we sampling, it is necessary to see the tendency of comments amount with time. So here is a visualization of time and comments ammount:
 
 We can find except 12/2020, which is the publication date of the cyberpunk 2077, there are also several peak review moment including 11/2021, 09/2022, 09/2023, which correspond to major update patch 1.3, 1.6, and 2.0 respectively. The detailed patch timeline can be found in this website: <https://store.steampowered.com/news/app/1091500>
@@ -205,6 +207,9 @@ ggplot(df_monthly, aes(x = date, y = count)) +
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 ```
+
+
+
 ```{R}
 monthly_rating <- df_en %>%
   group_by(year_month, Rating) %>%
@@ -241,7 +246,7 @@ dim(df_sam)
 ```
 
 
-Create a function for data tidy
+Create a function for data tidy.
 
 ```{R}
 # Prepare the stopwords library
@@ -447,6 +452,24 @@ ggplot(sim_df, aes(x = doc1, y = doc2, fill = sim_level)) +
 
 ## STM Analysis
 
+Using STM analysis, we can find there are 4 topics in the comments of player's discussions:
+
++ Topics 1: story, bugs, good, really, great
+
+The key word including positive aspect like good, really, but bugs are also found in this section. I interpret that in this topics player's may express good emotions in the game's story, but also suggests the bugs in the game. In a word, I will conclude this topics as **Stories are attracted but bugs are existed**. 
+
++ Topics 2: play, time, played, feel, say
+
+This topics focused more on the user's experience and the game itself due to there are subjective feeling word like feel, say in this topics. I will conclude this topics as **The feeling when players are playing the game**.
+
++ Topics 3: ive, best, want, year, launch
+
+The expected word in this topics (ive probably refers to I've), as well as "best" and "want" indicate to the willings of players. So I will conclude this topics as **Exceptions on game's update or long-term performance**.
+
++ Topics 4: like, world, fun, people, bad
+
+There are opposite words in this topics (fun vs. bad), which indicate the conflict in the comments. The word "world" and "people" in this topics refers to the construct of the game's world and the npcs in it, which means players may hold two opposite sides of view in the game design. So I will conclude this topics as **The interactive of game's world**.
+
 ```{R}
 
 # File pre-processed
@@ -467,13 +490,109 @@ meta <- out$meta
 
 meta$year_month <- as.Date(paste0(meta$year_month, "-01"))
 meta$month_num <- as.numeric(meta$year_month)
+```
 
-stm_model <- stm(documents = docs,
-                 vocab = vocab,
-                 K = 5,
-                 prevalence = ~ Rating + s(month_num),
-                 data = meta,
-                 max.em.its = 10,
-                 init.type = "Spectral")
+```{R}
+stm_model <- suppressMessages(
+  suppressWarnings(
+    capture.output({
+      model <- stm(documents = docs,
+                   vocab = vocab,
+                   K = 4,
+                   prevalence = ~ Rating + s(month_num),
+                   data = meta,
+                   max.em.its = 20,
+                   init.type = "Spectral")
+    }, file = NULL)
+  )
+)
+stm_model <- model
+```
+
+```{R}
+td <- tidytext::tidy(stm_model)
+
+# Every theme's top 5 words
+top_terms <- td %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 5) %>%
+  ungroup() %>%
+  mutate(term = reorder_within(term, beta, topic))
+
+# ggplot
+ggplot(top_terms, aes(x = term, y = beta, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free_y") +
+  scale_x_reordered() +
+  coord_flip() +
+  labs(x = "Terms", y = "Beta (Word Probability)",
+       title = "Top Terms per Topic") +
+  scale_fill_manual(values = c(
+    met.brewer("Monet")[2], met.brewer("Monet")[5], 
+    met.brewer("Monet")[8], met.brewer("Monet")[9])) +  
+
+  theme_bw()
 
 ```
+
+The plot below shows the proportion change over time of the four topics.
+
+Topics V1 (Story) shows a clear declining trend. It starts as the most dominant topics with a proportion around 0.67, but gradually decrease toward 2024, so a conclusion will be with time goes on, the discussion of story plot is decresing.
+
+Topics V2 (Feeling) remains relatively stable at a low level in earlier years but increases slightly in 2024, which indicates people focus more on the ego feeling in recent months.
+
+Topics V3 (Expectation) and V4 (Interactive) both stay flat and low, with only minor fluctuations.
+
+```{R}
+# Extract the distribution of themes
+theta_df <- as.data.frame(stm_model$theta)
+theta_df$year_month <- meta$year_month
+theta_df$Rating <- meta$Rating
+
+theta_long <- theta_df %>%
+  pivot_longer(cols = starts_with("V"), 
+               names_to = "topic",
+               values_to = "proportion",
+               names_transform = list(topic = readr::parse_number))
+
+# Visualisation the tendency of 4 topics via time
+ggplot(theta_long, aes(x = as.Date(paste0(year_month, "-01")), 
+                       y = proportion,
+                       color = factor(topic))) +    
+  geom_smooth(method = "gam", se = FALSE) +  
+  facet_wrap(~ topic, ncol = 2) +            
+  scale_color_manual(values = c(
+    met.brewer("Monet")[2], met.brewer("Monet")[5], 
+    met.brewer("Monet")[8], met.brewer("Monet")[9])) +  
+  labs(x = "Month", y = "Topic Proportion",
+       title = "Topic Trends Over Time",
+       color = "Topic") +
+  theme_bw()
+```
+
+The bar chart below displays the topic proportion distribution of the first 50 documents in the database. Each bar represents a document, and the colored segments within each bar show the relative contribution of each topic to the document.
+
+Key insights of the bar is firstly, V1 takes the overwhelmingly positions of the most documents. Usually in every document it accounts for the majority proportion, often over 60%.
+
+Topics 2, 3, and 4 make up smaller proportions, with their contributions varying slightly across documents.
+
+The mix of multiple topics suggests that each document can be about multiple themes to different extents while the consistent dominance of Topic 1 may indicate it represnts a common theme across the corpus, which is the **Story** aspects in player experience.
+
+```{R}
+# Find the distribution of document themes
+theta_long <- stm_model$theta %>%
+  as.data.frame() %>%
+  mutate(doc_id = row_number()) %>%
+  pivot_longer(-doc_id, names_to = "topic", values_to = "proportion")
+
+# Visulisation top 50 documents
+ggplot(theta_long %>% filter(doc_id <= 50), 
+       aes(x = doc_id, y = proportion, fill = topic)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Document", y = "Topic Proportion", fill = "Topic") +
+  scale_fill_manual(values = c(
+    met.brewer("Monet")[2], met.brewer("Monet")[5], 
+    met.brewer("Monet")[8], met.brewer("Monet")[9])) + 
+  theme_bw()
+```
+
