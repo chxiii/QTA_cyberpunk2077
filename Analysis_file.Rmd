@@ -478,7 +478,7 @@ Using STM analysis, we can find there are 4 topics in the comments of player's d
 
 + Topics 4: like, world, fun, people, bad
 
-There are opposite words in this topics (fun vs. bad), which indicate the conflict in the comments. The word "world" and "people" in this topics refers to the construct of the game's world and the npcs in it, which means players may hold two opposite sides of view in the game design. So I will conclude this topics as **The interactive of game's world**.
+  There are opposite words in this topics (fun vs. bad), which indicate the conflict in the comments. The word "world" and "people" in this topics refers to the construct of the game's world and the npcs in it, which means players may hold two opposite sides of view in the game design. So I will conclude this topics as **The interactive of game's world**.
 
 ```{R}
 
