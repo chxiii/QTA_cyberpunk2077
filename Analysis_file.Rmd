@@ -9,21 +9,13 @@ date: "2025-05-07"
 
 1. For the language used in comments and the performance of emotions, positive comments are more concise and emotional, but negative comments being more specific and complex.
 
-I found player's comments focus on game experience, story, bugs and update, also in Keyness analysis, positive comments are tend to "love", "great", "fun" while negative comments tend to "bug", "crash", "borning". Also TTR analysis show that the diversity of negative comments in higher than positive ones.
+  + I found player's comments focus on game experience, story, bugs and update, also in Keyness analysis, positive comments are tend to "love", "great", "fun" while negative comments tend to "bug", "crash", "borning". Also TTR analysis show that the diversity of negative comments in higher than positive ones.
 
 2. Players' comments behaviour is highly event-driven. In version updates, especially large updates can significantly affect the number and the sentiment of comments.
 
-The amount of comments 
+3. There are some comments with a highly similarity according to a cosine analysis test, which means there are some players' comments are from template reply, imitation or community expand. 
 
-What's the most used language in Cyberpunk 2077's steam review? English and Chinese.
-
-What's the distribution of comments amount and ratings with the change of version?
-
-What's the most used word in players' comments?
-
-What's the attention differences between positive and negative comments?
-
-
+4. With STM analysis, I confirmed 4 main topics in all comments which are story and bug (T1), game experience (T2), user review (T3) and atmosphere (T4). T1 takes the biggest proportion, but the heat of disscusion is decrease with version goes by; T2 is increasing which indicates players are transfer their interest from game to themselves. T3 and T4 are stable and represents as the background information of the comments.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -79,8 +71,7 @@ options(scipen = 200)
 set.seed(42)
 ```
 
-
-
+## Import the data
 
 ```{R}
 # Create a temporary path for data downloading
@@ -262,7 +253,7 @@ dim(df_sam)
 ```
 
 
-Create a function for data tidy.
+Create a function for data tidy including lower writing style, delete special characters, spaces, lines, numbers, etc.
 
 ```{R}
 # Prepare the stopwords library
@@ -285,6 +276,7 @@ df_sam <- df_sam %>%
   mutate(Review = sapply(Review, review_tidy))
 ```
 
+Calculate the top frequency words:
 
 ```{R}
 word_freq <- df_sam %>%
@@ -343,6 +335,8 @@ dfm_grouped <- dfm(toks) %>%
 ```
 
 ## Keyness Analysis
+
+The bar chart displays the results of a Keyness analysis based on Chi-squared values, comparing word usage between positive ("Recommended") and negative ("Not Recommended") reviews. Positive reviews frequently include emotional and appreciative words such as "great", "amazing", "fun", "love", and "awesome", while negative reviews are characterized by highly critical or frustrated terms like "trash", "boring", "refund", "broken", and "garbage".
 
 ```{R}
 # Keyness
@@ -472,15 +466,15 @@ Using STM analysis, we can find there are 4 topics in the comments of player's d
 
 + Topics 1: story, bugs, good, really, great
 
-The key word including positive aspect like good, really, but bugs are also found in this section. I interpret that in this topics player's may express good emotions in the game's story, but also suggests the bugs in the game. In a word, I will conclude this topics as **Stories are attracted but bugs are existed**. 
+  The key word including positive aspect like good, really, but bugs are also found in this section. I interpret that in this topics player's may express good emotions in the game's story, but also suggests the bugs in the game. In a word, I will conclude this topics as **Stories are attracted but bugs are existed**. 
 
 + Topics 2: play, time, played, feel, say
 
-This topics focused more on the user's experience and the game itself due to there are subjective feeling word like feel, say in this topics. I will conclude this topics as **The feeling when players are playing the game**.
+  This topics focused more on the user's experience and the game itself due to there are subjective feeling word like feel, say in this topics. I will conclude this topics as **The feeling when players are playing the game**.
 
 + Topics 3: ive, best, want, year, launch
 
-The expected word in this topics (ive probably refers to I've), as well as "best" and "want" indicate to the willings of players. So I will conclude this topics as **Exceptions on game's update or long-term performance**.
+  The expected word in this topics (ive probably refers to I've), as well as "best" and "want" indicate to the willings of players. So I will conclude this topics as **Exceptions on game's update or long-term performance**.
 
 + Topics 4: like, world, fun, people, bad
 
