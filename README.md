@@ -14,7 +14,7 @@ Welcome to a comprehensive user research project that analyzes Steam reviews of 
 
 3. Word Frequency and Word Clouds
 
-   - Common tokens in positive vs negative reviews and intuitive snapshot of dominant player concerns and praise.
+  - Common tokens in positive vs negative reviews and intuitive snapshot of dominant player concerns and praise.
 
 4. Keyness Analysis
 
@@ -31,6 +31,13 @@ Welcome to a comprehensive user research project that analyzes Steam reviews of 
 7. Structural Topic Modeling (STM)
 
   - Extracts latent topics across thousands of reviews and tracks topic proportion shifts over time and across game patches.
+
+# Key Insights
+
+- **Player's exeperience increased overtime**: particularly after major updates and bug fixes, as seen in review volume and positive rating trends.
+- **Keyness analysis** revealed strongly polarized language: words like “amazing” and “immersive” dominated positive reviews, whereas “trash” and “broken” were typical in negatives.
+- **Positive comments are more concise and emotional, while negative comments being more specific and complex** according to TTR analysis.
+- **Topic modeling (STM)** identified four main themes, including gameplay, technical performance, story immersion, and community sentiment—each evolving distinctly across time.
 
 # Tools and Libraries
 
